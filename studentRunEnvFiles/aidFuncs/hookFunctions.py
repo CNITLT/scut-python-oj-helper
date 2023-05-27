@@ -49,7 +49,7 @@ def pythonOjOpen(*args,**kwargs):
     #     args = tuple(args)
     #     kwargs["encoding"] = "utf8"
     #todo::根据题目随时修改或注释
-    return pythonOjOldOpen("data.txt", "r",encoding="utf-8")
+    #return pythonOjOldOpen("data.txt", "r",encoding="utf-8")
     # 只能打开工作目录下的文件,打开别的地方的直接关掉程序
     workDir = os.path.abspath(os.getcwd())
     absFilePath = os.path.abspath(args[0])
