@@ -10,10 +10,13 @@
 4. 打印未评分或未满分且评语不足5个字的学生编号，这两种情况会导致保存失败， 调用方法F12打开控制台，运行pfUnvalue()函数即可
    
 ## 注意
-1. studentRunEnvFiles/aidFuncs/hookFunctions.py这里pythonOjOpen函数内有一行是指定打开某个文件和编码方式，防止找不到文件，学生写的文件名可能不统一，这里统一打开
-2. studentRunEnvFiles/aidFuncs/pythonOJConfig.py pythonOJRunTimeLimit=10默认只能运行10秒，超过会自动关闭，为了防止死循环，但也有确实写的太烂或输入给的太大导致运行时长过长的可能。注意修改,小于等于0的表示不限制运行时间
-3. Student.py popen.buffer.read().decode("utf-8")这行可能会因为电脑设置不同导致异常,请自行解决
-4. 遇到文件读写题，题目要求读取的文件请放入studentRunEnvFiles/inputFiles内
+1. studentRunEnvFiles/aidFuncs/hookFunctions.py这里pythonOjOpen函数内有一行是指定打开某个文件和编码方式，防止找不到文件，学生写的文件名可能不统一，这里统一打开.
+2. 具体文件名和是否开启统一打开功能在pythonOJConfig.py内设置
+openedFileName和fixOpenedFileNameFlag这两个变量
+ 
+3. studentRunEnvFiles/aidFuncs/pythonOJConfig.py pythonOJRunTimeLimit=10默认只能运行10秒，超过会自动关闭，为了防止死循环，但也有确实写的太烂或输入给的太大导致运行时长过长的可能。注意修改,小于等于0的表示不限制运行时间
+4. Student.py popen.buffer.read().decode("utf-8")这行可能会因为电脑设置不同导致异常,请自行解决
+5. 遇到文件读写题，题目要求读取的文件请放入studentRunEnvFiles/inputFiles内
 
 ## 效果图
 ![题目和输入][question]
