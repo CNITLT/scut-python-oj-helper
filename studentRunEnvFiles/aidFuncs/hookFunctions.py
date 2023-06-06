@@ -3,10 +3,12 @@ import sys
 import re
 from shutil import copyfile
 
+import pandas
+
 from pythonOJConfig import *
 import threading
 import time
-
+import pandas as pd
 pythonOJOldInput = input
 
 moduleAndHookFunction = {}
@@ -48,8 +50,8 @@ def pythonOjOpen(*args,**kwargs):
     #     args[0] = "2015年5月高三模拟考成绩.csv"
     #     args = tuple(args)
     #     kwargs["encoding"] = "utf8"
-    #todo::根据题目随时修改或注释
-    #return pythonOjOldOpen("data.txt", "r",encoding="utf-8")
+    if fixOpenedFileNameFlag:
+        return pythonOjOldOpen(openedFileName, "r",encoding="utf-8")
     # 只能打开工作目录下的文件,打开别的地方的直接关掉程序
     workDir = os.path.abspath(os.getcwd())
     absFilePath = os.path.abspath(args[0])
@@ -63,10 +65,64 @@ def pythonOjOpen(*args,**kwargs):
     fo = pythonOjOldOpen(*args,**kwargs)
     pythonOJOpenFoList.append(fo)
     return fo
+
+
 def hookOpen():
     global open
     open = pythonOjOpen
 hookOpen()
+
+
+
+
+
+def pandasHook():
+    import pandas
+    oldRead_csv = pandas.read_csv
+    oldRead_excel = pandas.read_excel
+    def pythonOjPandasRead_csv(*args, **kwargs):
+        if fixOpenedFileNameFlag:
+            args = list(args)
+            args[0] = openedFileName
+            args = tuple(args)
+            return oldRead_csv(*args, **kwargs)
+        # 只能打开工作目录下的文件,打开别的地方的直接关掉程序
+        workDir = os.path.abspath(os.getcwd())
+        absFilePath = os.path.abspath(args[0])
+
+        if not absFilePath.startswith(workDir):
+            print(sys.argv[0], "正在打开非工作目录下的文件")
+            exit(-1)
+
+        if args[0] not in pythonOJNeedReadFileList:
+            pythonOJNeedReadFileList.append(args[0])
+        fo = oldRead_csv(*args, **kwargs)
+        pythonOJOpenFoList.append(fo)
+        return fo
+    pandas.read_csv = pythonOjPandasRead_csv
+    def pythonOjPandasRead_excel(*args, **kwargs):
+        if fixOpenedFileNameFlag:
+            args = list(args)
+            args[0] = openedFileName
+            args = tuple(args)
+            return oldRead_excel(*args, **kwargs)
+        # 只能打开工作目录下的文件,打开别的地方的直接关掉程序
+        workDir = os.path.abspath(os.getcwd())
+        absFilePath = os.path.abspath(args[0])
+
+        if not absFilePath.startswith(workDir):
+            print(sys.argv[0], "正在打开非工作目录下的文件")
+            exit(-1)
+
+        if args[0] not in pythonOJNeedReadFileList:
+            pythonOJNeedReadFileList.append(args[0])
+        fo = oldRead_excel(*args, **kwargs)
+        pythonOJOpenFoList.append(fo)
+        return fo
+    pandas.read_excel = pythonOjPandasRead_excel
+
+
+moduleAndHookFunction["pandas"] = pandasHook
 
 for moduleName,hookFunction in moduleAndHookFunction.items():
     if hasModule(moduleName):

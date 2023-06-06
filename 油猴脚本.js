@@ -6,6 +6,8 @@
 // @author       You
 // @match        *://1024.se.scut.edu.cn/%E5%85%A8%E9%83%A8%E4%BD%9C%E4%B8%9A*
 // @match        *://1024.se.scut.edu.cn/%e5%85%a8%e9%83%a8%e4%bd%9c%e4%b8%9a*
+// @match        *://222.201.187.187:8006/%E5%85%A8%E9%83%A8%E4%BD%9C%E4%B8%9A*
+// @match        *://222.201.187.187:8006/%e5%85%a8%e9%83%a8%e4%bd%9c%e4%b8%9a*
 // @connect      *
 // @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
