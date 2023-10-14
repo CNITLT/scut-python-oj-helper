@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         python oj辅助
 // @namespace    http://tampermonkey.net/
-// @version      2.5
+// @version      2.6
 // @description  辅助判断PYTHON的编程题答案
 // @author       You
 // @match        *://1024.se.scut.edu.cn/%E5%85%A8%E9%83%A8%E4%BD%9C%E4%B8%9A*
@@ -206,7 +206,29 @@
             }
         });
     }
-//前面加入一个输入框
+
+    //从这里开始改变DOM元素
+    //针对部分中文符号进行检测主要是容易混用的符号
+     for(let i = 0; i < studentCodeDomList.length;i++){
+        let code = studentCodeDomList[i].innerText;
+
+        //部分中文符号匹配
+        let chineseCharMatchRes= code.match(/[｛｝（）【】：“”‘’，。－＋＝]/g);
+
+        if(chineseCharMatchRes != null) {
+            let tipDomStr = "";
+            chineseCharMatchRes = Array.from(new Set(chineseCharMatchRes))
+            tipDomStr += "含有中文字符:<br>" + chineseCharMatchRes.join(" ") + "<br>";
+            let tipDom = document.createElement("span");
+            tipDom.style="color:red";
+            tipDom.innerHTML = tipDomStr;
+            //插入提示DOM
+            let codeDom = studentCodeDomList[i];
+            codeDom.parentNode.insertBefore(tipDom,codeDom);
+        }
+    }
+
+    //前面加入一个输入框
     const inputTemplate = '<textarea cols="40" rows="5" id="pythonWebOJTestInput" placeholder="输入程序需要从标准输入流读取的数据"></textarea>'+
     '<button id="startPythonOJTestButton"  type="button">提交</button>' +
     '<button id="clearPythonOJTestButton"  type="button">清空</button>';
