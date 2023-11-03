@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         python oj辅助
 // @namespace    http://tampermonkey.net/
-// @version      2.7
+// @version      2.8
 // @description  辅助判断PYTHON的编程题答案
 // @author       You
 // @match        *://1024.se.scut.edu.cn/%E5%85%A8%E9%83%A8%E4%BD%9C%E4%B8%9A*
@@ -251,11 +251,33 @@
                 codeDom.parentNode.insertBefore(tipDom, codeDom);
             }
         }
+        //筛选重做学生，把信息标红
+        //根据提交时间大于某个值来筛选
+
+        function filter_redo(redo_date){
+            let font_arr = document.getElementsByTagName("font");
+            let student_info_pattern = /(\d*) (\S*) (\S*) 提交时间:(\S* \S*)/;
+            let submit_time_pattern = /(\d*)-(\d*)-(\d*) (\d*):(\d*):(\d*)/;
+            for(let i = 0; i < font_arr.length;i++){
+                let text = font_arr[i].innerText;
+                if(student_info_pattern.test(text)){
+                    let submit_date_str = text.match(submit_time_pattern)[0];
+                    let submit_date = new Date(submit_date_str);
+                    if(submit_date > redo_date){
+                        font_arr[i].color="red";
+                    }
+                    else{
+                        font_arr[i].color="blue";
+                    }
+                }
+            }
+        }
 
         //前面加入一个输入框
         const inputTemplate = '<textarea cols="40" rows="5" id="pythonWebOJTestInput" placeholder="输入程序需要从标准输入流读取的数据"></textarea>' +
             '<button id="startPythonOJTestButton"  type="button">提交</button>' +
-            '<button id="clearPythonOJTestButton"  type="button">清空</button>';
+            '<button id="clearPythonOJTestButton"  type="button">清空</button>' +
+            '<button id="redoFilterPythonOJTestButton"  type="button">重做</button>';
         //第0个不一定是案例，直接加在题目旁边
         var firstDivDom = document.getElementsByClassName("autoBR")[0];
         var inputDimDom = document.createElement('div');
@@ -267,7 +289,10 @@
         document.getElementById("clearPythonOJTestButton").addEventListener('click', function () {
             students.clearAllAnswer();
         });
-
+        document.getElementById("redoFilterPythonOJTestButton").addEventListener('click', function (){
+            let redo_date_str = prompt("输入重做时间(年-月-日):");
+            filter_redo(new Date(redo_date_str));
+        });
         function myEnhancedSave() {
             //写缓存
             //先获取问题,以问题作为key值
