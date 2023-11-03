@@ -269,8 +269,37 @@
                     else{
                         font_arr[i].color="blue";
                     }
+                    let hidden_flag = true;
+                    let e = font_arr[i];
+                    if(e.color == "red"){
+                        hidden_flag = false;
+                    }
+                    while(true){
+                        console.log(e);
+                        if(e == null){
+                            break;
+                        }
+                        if(typeof (e.tagName) == "undefined"){
+                            let parent = document.createElement("span");
+                            let child = e;
+                            child.parentNode.replaceChild(parent,child);//  获取子元素原来的父元素并将新父元素代替子元素
+                            parent.appendChild(child);//  在新父元素下添加原来的子元素
+                            e = parent;
+                        }
+                        if(e.tagName.toLowerCase()=="input" && e.getAttribute("name")=="submit1"){
+                            break;
+                        }
+                        if(i < font_arr.length-1 && e === font_arr[i+1]){
+                            break;
+                        }
+
+                        e.hidden = hidden_flag;
+                        e = e.nextSibling;
+                    }
                 }
             }
+            
+
         }
 
         //前面加入一个输入框
