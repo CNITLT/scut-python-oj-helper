@@ -319,8 +319,41 @@
             students.clearAllAnswer();
         });
         document.getElementById("redoFilterPythonOJTestButton").addEventListener('click', function (){
-            let redo_date_str = prompt("输入重做时间(年-月-日):");
-            filter_redo(new Date(redo_date_str));
+            let font_arr = document.getElementsByTagName("font");
+            let student_info_pattern = /(\d*) (\S*) (\S*) 提交时间:(\S* \S*)/;
+            let submit_time_pattern = /(\d*)-(\d*)-(\d*) (\d*):(\d*):(\d*)/;
+            let min_date = null;
+            let max_date = null;
+
+            for(let i = 0; i < font_arr.length;i++){
+                let text = font_arr[i].innerText;
+                if(student_info_pattern.test(text)){
+                    let submit_date_str = text.match(submit_time_pattern)[0];
+                    let submit_date = new Date(submit_date_str);
+                    if(min_date == null){
+                        min_date = submit_date;
+                    }
+                    if(max_date == null){
+                        max_date = submit_date;
+                    }
+                    if(min_date > submit_date){
+                        min_date = submit_date;
+                    }
+                    if(max_date < submit_date){
+                        max_date = submit_date;
+                    }
+                }
+            }
+
+            if((max_date-min_date) >= 7*24*60*60*1000){
+                //差值大于一周说明有重做的
+                //let redo_date_str = prompt("输入重做时间(年-月-日):");
+                let redo_date = new Date(Date.parse(min_date));
+                redo_date.setDate(redo_date.getDate() + 7);
+                filter_redo(redo_date);
+            }
+            //let redo_date_str = prompt("输入重做时间(年-月-日):");
+            //filter_redo(new Date(redo_date_str));
         });
         function myEnhancedSave() {
             //写缓存
