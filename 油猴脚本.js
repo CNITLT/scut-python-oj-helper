@@ -275,7 +275,7 @@
                         hidden_flag = false;
                     }
                     while(true){
-                        console.log(e);
+                        //console.log(e);
                         if(e == null){
                             break;
                         }
@@ -290,7 +290,9 @@
                             break;
                         }
                         if(i < font_arr.length-1 && e === font_arr[i+1]){
-                            break;
+                            if(student_info_pattern.test(font_arr[i+1].innerText)) {
+                                break;
+                            }
                         }
 
                         e.hidden = hidden_flag;
