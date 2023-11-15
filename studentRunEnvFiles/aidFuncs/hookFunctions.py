@@ -26,6 +26,9 @@ def turtleHook():
     # 规定画布大写，这个依据题目频繁的改
     turtle.setup(800, 800, None, None)
     turtle.setup = lambda *args, **kwargs: None
+    turtle._Screen.exitonclick = lambda *args, **kwargs: None
+    turtle._Screen.mainloop = lambda *args, **kwargs: None
+    turtle.mainloop = lambda *args, **kwargs: None
 moduleAndHookFunction["turtle"] = turtleHook
 
 
