@@ -256,49 +256,59 @@
 
         function filter_redo(redo_date){
             let font_arr = document.getElementsByTagName("font");
+            let student_font_arr = new Array();
             let student_info_pattern = /(\d*) (\S*) (\S*) 提交时间:(\S* \S*)/;
             let submit_time_pattern = /(\d*)-(\d*)-(\d*) (\d*):(\d*):(\d*)/;
-            for(let i = 0; i < font_arr.length;i++){
-                let text = font_arr[i].innerText;
-                if(student_info_pattern.test(text)){
-                    let submit_date_str = text.match(submit_time_pattern)[0];
-                    let submit_date = new Date(submit_date_str);
-                    if(submit_date > redo_date){
-                        font_arr[i].color="red";
-                    }
-                    else{
-                        font_arr[i].color="blue";
-                    }
-                    let hidden_flag = true;
-                    let e = font_arr[i];
-                    if(e.color == "red"){
-                        hidden_flag = false;
-                    }
-                    while(true){
-                        //console.log(e);
-                        if(e == null){
-                            break;
-                        }
-                        if(typeof (e.tagName) == "undefined"){
-                            let parent = document.createElement("span");
-                            let child = e;
-                            child.parentNode.replaceChild(parent,child);//  获取子元素原来的父元素并将新父元素代替子元素
-                            parent.appendChild(child);//  在新父元素下添加原来的子元素
-                            e = parent;
-                        }
-                        if(e.tagName.toLowerCase()=="input" && e.getAttribute("name")=="submit1"){
-                            break;
-                        }
-                        if(i < font_arr.length-1 && e === font_arr[i+1]){
-                            if(student_info_pattern.test(font_arr[i+1].innerText)) {
-                                break;
-                            }
-                        }
 
-                        e.hidden = hidden_flag;
-                        e = e.nextSibling;
-                    }
+             for(let i = 0; i < font_arr.length;i++) {
+                let text = font_arr[i].innerText;
+                if (student_info_pattern.test(text)) {
+                    student_font_arr.push(font_arr[i]);
                 }
+            }
+            //插入保存按钮dom当哨兵
+            let save_button = document.getElementById("myFixedSubmitButton");
+             student_font_arr.push(save_button);
+
+            for(let i = 0; i < student_font_arr.length - 1;i++){
+                let text = student_font_arr[i].innerText;
+                let submit_date_str = text.match(submit_time_pattern)[0];
+                let submit_date = new Date(submit_date_str);
+                if(submit_date > redo_date){
+                    font_arr[i].color="red";
+                }
+                else{
+                    font_arr[i].color="blue";
+                }
+                /*
+                let hidden_flag = true;
+                let e = font_arr[i];
+                if(e.color == "red"){
+                    hidden_flag = false;
+                }
+                while(true){
+                    //console.log(e);
+                    if(e == null){
+                        break;
+                    }
+                    if(e.contains(student_font_arr[i+1])){
+                        break;
+                    }
+
+                    if(typeof (e.tagName) == "undefined"){
+                        let parent = document.createElement("span");
+                        let child = e;
+                        child.parentNode.replaceChild(parent,child);//  获取子元素原来的父元素并将新父元素代替子元素
+                        parent.appendChild(child);//  在新父元素下添加原来的子元素
+                        e = parent;
+                    }
+
+                    e.hidden = hidden_flag;
+                    e = e.nextSibling;
+                }
+                */
+
+
             }
         }
 
@@ -353,8 +363,9 @@
                     let redo_date = new Date(Date.parse(min_date));
                     redo_date.setDate(redo_date.getDate() + 7);
                     filter_redo(redo_date);
+                    redo_button_dom.innerText = "显示全部";
                 }
-                redo_button_dom.innerText = "显示全部";
+
                 //let redo_date_str = prompt("输入重做时间(年-月-日):");
                 //filter_redo(new Date(redo_date_str));
             }
