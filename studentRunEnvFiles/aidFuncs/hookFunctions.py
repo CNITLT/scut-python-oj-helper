@@ -13,7 +13,11 @@ pythonOJOldInput = input
 
 moduleAndHookFunction = {}
 def input(*args, **kwargs):
-    res = pythonOJOldInput(*args, **kwargs)
+    try:
+        res = pythonOJOldInput(*args, **kwargs)
+    except Exception as e:
+        print(e)
+        os._exit(-1) #防止把try 放到while True里给弄成死循环
     print(res)
     return res
 
@@ -38,7 +42,7 @@ def fixRandomSeed():
     固定随机数，保证生成的随机数序列是固定的，方便判断
     """
     import random
-    random.seed(2023)
+    random.seed(1000)
     pythonOJOldRandomSeed = random.seed
     random.seed = lambda *args, **kwargs: None
 
@@ -55,6 +59,13 @@ def pythonOjOpen(*args,**kwargs):
     #     kwargs["encoding"] = "utf8"
     if fixOpenedFileNameFlag:
         return pythonOjOldOpen(openedFileName, "r",encoding="utf-8")
+
+    #打开的文件目录全部切换到工作目录下
+    filename = os.path.basename(args[0])
+    args = list(args)
+    args[0] = "./{}".format(filename)
+    args = tuple(args)
+
     # 只能打开工作目录下的文件,打开别的地方的直接关掉程序
     workDir = os.path.abspath(os.getcwd())
     absFilePath = os.path.abspath(args[0])
@@ -123,8 +134,6 @@ def pandasHook():
         pythonOJOpenFoList.append(fo)
         return fo
     pandas.read_excel = pythonOjPandasRead_excel
-
-
 moduleAndHookFunction["pandas"] = pandasHook
 
 for moduleName,hookFunction in moduleAndHookFunction.items():
@@ -156,3 +165,4 @@ def endRunLimitTimer():
 
 
 startRunLimitTimer()
+

@@ -6,7 +6,7 @@ from Student import Student
 from Question import Question
 import os
 from concurrent.futures import ThreadPoolExecutor
-
+from studentRunEnvFiles.aidFuncs.pythonOJConfig import maxWorkThreadNum
 def testAnswer(student,inputStr):
     print(student.seq, " ", student.name)
     res = student.testAnswer(inputStr)
@@ -45,7 +45,7 @@ class StudentsControler:
         self.preprocess()
 
         res = {}
-        with ThreadPoolExecutor(max_workers=cpu_count()) as threadPool:
+        with ThreadPoolExecutor(max_workers=min(maxWorkThreadNum,cpu_count())) as threadPool:
             for ret in threadPool.map(testAnswer, self.studentList, [self.inputStr] * len(self.studentList)):
                 # print(list(ret.keys())[0])
                 res.update(ret)

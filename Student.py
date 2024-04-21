@@ -114,6 +114,8 @@ class Student:
         with os.popen(cmd) as popen:
             out = popen.buffer.read().decode("utf-8")
         #print(str(self.seq) + self.name)
+        out = out.replace("\r\n", "\n")
+        out = out.replace("\r", "|")
         return out
     @staticmethod
     def testFile(pyFile, inputFile):
@@ -122,4 +124,5 @@ class Student:
             out = popen.buffer.read().decode("utf-8")
         # print(str(self.seq) + self.name)
         out = out.replace("\r\n", "\n")
+
         return out

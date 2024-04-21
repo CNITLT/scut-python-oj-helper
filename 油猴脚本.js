@@ -32,6 +32,66 @@
     if(all_homework_reg.test(window.location.href)) {
         //批改部分的代码
         console.log("作业批改增强")
+        class Student_info{
+            constructor(info_dom, answer_dom,score_doms,remark_dom) {
+                this.info_dom = info_dom;
+                this.answer_dom = answer_dom;
+                this.score_doms = score_doms;
+                this.remark_dom = remark_dom;
+                //补交作业没有提交时间
+                let student_info_pattern = /(\d*) (.*) (\S*) 提交时间:(.*)/;
+                let matchRes = info_dom.innerText.match(student_info_pattern);
+                this.studentNumber = matchRes[1];
+                this.studentName = matchRes[2];
+                this.className = matchRes[3];
+                this.submit_date = new Date(matchRes[4]);
+                this.answer = answer_dom.innerText;
+            }
+
+            hidden(){
+                this.info_dom.hidden = true;
+                this.answer_dom.hidden = true;
+                for(let i = 0; i < this.score_doms.length;i++){
+                    this.score_doms[i].hidden = true;
+                }
+                this.remark_dom.hidden = true;
+            }
+
+            show(){
+                this.info_dom.hidden = false;
+                this.answer_dom.hidden = false;
+                for(let i = 0; i < this.score_doms.length;i++){
+                    this.score_doms[i].hidden = false;
+                }
+                this.remark_dom.hidden = false;
+            }
+
+        }
+        //必须在页面没改变前调用
+        function get_student_info_list(){
+            let font_arr = document.getElementsByTagName("font");
+            let student_font_arr = new Array();
+            //补交答案没有具体的提交时间
+            let student_info_pattern = /(\d*) (.*) (\S*) 提交时间:(.*)/;
+            let student_info_list = new Array();
+            for(let i = 0; i < font_arr.length;i++) {
+                let text = font_arr[i].innerText;
+                if (student_info_pattern.test(text)) {
+                    student_font_arr.push(font_arr[i]);
+                }
+            }
+            let inputRadioList = Array.prototype.slice.call(document.querySelectorAll("input[type=radio][name^=radioScore]"));
+            let studentNum = inputRadioList.length / 11;
+            let studentCodeDomList = Array.prototype.slice.call(document.getElementsByClassName("divcss5-b")).slice(-1 * studentNum);
+            let remarkList = Array.prototype.slice.call(document.querySelectorAll("input[type=text][id^=txtRemark]"));
+            for(let i = 0; i < studentNum;i++){
+                student_info_list.push(new Student_info(student_font_arr[i],studentCodeDomList[i],
+                    inputRadioList.slice(i*11,(i+1)*11),remarkList[i]));
+            }
+            return student_info_list;
+        }
+        var student_list = get_student_info_list();
+
 
         var inputRadioNamePre = "radioScore";
         var inputRemarkIdPre = "txtRemark";
@@ -149,6 +209,7 @@
                     //创建div块，并插入
                     var newDom = divDom.cloneNode(true);
                     newDom.style = "float:right";
+                    newDom.id = "answerRunRes"+i;
                     divDom.parentNode.insertBefore(newDom, divDom);
                     //清空代码
                     var answerDom = newDom.getElementsByTagName("code")[0];
@@ -255,34 +316,20 @@
         //根据提交时间大于某个值来筛选
 
         function filter_redo(redo_date){
-            let font_arr = document.getElementsByTagName("font");
-            let student_font_arr = new Array();
-            let student_info_pattern = /(\d*) (\S*) (\S*) 提交时间:(\S* \S*)/;
-            let submit_time_pattern = /(\d*)-(\d*)-(\d*) (\d*):(\d*):(\d*)/;
-
-             for(let i = 0; i < font_arr.length;i++) {
-                let text = font_arr[i].innerText;
-                if (student_info_pattern.test(text)) {
-                    student_font_arr.push(font_arr[i]);
-                }
-            }
-            //插入保存按钮dom当哨兵
-            let save_button = document.getElementById("myFixedSubmitButton");
-             student_font_arr.push(save_button);
-
-            for(let i = 0; i < student_font_arr.length - 1;i++){
-                let text = student_font_arr[i].innerText;
-                let submit_date_str = text.match(submit_time_pattern)[0];
-                let submit_date = new Date(submit_date_str);
+            for(let i = 0; i < student_list.length;i++){
+                let submit_date = student_list[i].submit_date;
                 if(submit_date > redo_date){
-                    font_arr[i].color="red";
+                    student_list[i].info_dom.color="red";
+                    student_list[i].show();
                 }
                 else{
-                    font_arr[i].color="blue";
+                    student_list[i].info_dom.color="blue";
+                    student_list[i].hidden();
                 }
+
                 /*
                 let hidden_flag = true;
-                let e = font_arr[i];
+                let e =  student_list[i].info_dom;
                 if(e.color == "red"){
                     hidden_flag = false;
                 }
@@ -294,6 +341,7 @@
                     if(e.contains(student_font_arr[i+1])){
                         break;
                     }
+
 
                     if(typeof (e.tagName) == "undefined"){
                         let parent = document.createElement("span");
@@ -307,6 +355,7 @@
                     e = e.nextSibling;
                 }
                 */
+
 
 
             }
@@ -331,30 +380,24 @@
 
         document.getElementById("redoFilterPythonOJTestButton").addEventListener('click', function (){
             let redo_button_dom =  document.getElementById("redoFilterPythonOJTestButton");
-            let font_arr = document.getElementsByTagName("font");
-            let student_info_pattern = /(\d*) (\S*) (\S*) 提交时间:(\S* \S*)/;
-            let submit_time_pattern = /(\d*)-(\d*)-(\d*) (\d*):(\d*):(\d*)/;
             let min_date = null;
             let max_date = null;
 
-            for (let i = 0; i < font_arr.length; i++) {
-                let text = font_arr[i].innerText;
-                if (student_info_pattern.test(text)) {
-                    let submit_date_str = text.match(submit_time_pattern)[0];
-                    let submit_date = new Date(submit_date_str);
-                    if (min_date == null) {
-                        min_date = submit_date;
-                    }
-                    if (max_date == null) {
-                        max_date = submit_date;
-                    }
-                    if (min_date > submit_date) {
-                        min_date = submit_date;
-                    }
-                    if (max_date < submit_date) {
-                        max_date = submit_date;
-                    }
+            for (let i = 0; i < student_list.length; i++) {
+                let submit_date = student_list[i].submit_date;
+                if (min_date == null) {
+                    min_date = submit_date;
                 }
+                if (max_date == null) {
+                    max_date = submit_date;
+                }
+                if (min_date > submit_date) {
+                    min_date = submit_date;
+                }
+                if (max_date < submit_date) {
+                    max_date = submit_date;
+                }
+
             }
             if(redo_button_dom.innerText == "重做") {
                 if ((max_date - min_date) >= 7 * 24 * 60 * 60 * 1000) {
@@ -375,13 +418,8 @@
                 filter_redo(show_all_date);//用于显示之前隐藏的dom
 
                 //下面是把颜色改回来
-                let font_arr = document.getElementsByTagName("font");
-                let student_info_pattern = /(\d*) (\S*) (\S*) 提交时间:(\S* \S*)/;
-                for(let i = 0; i < font_arr.length;i++){
-                    let text = font_arr[i].innerText;
-                    if(student_info_pattern.test(text)){
-                        font_arr[i].color = "blue";
-                    }
+                for(let i = 0; i < student_list.length;i++){
+                    student_list[i].info_dom.color = "blue";
                 }
                 redo_button_dom.innerText = "重做";
             }

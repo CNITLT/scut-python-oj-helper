@@ -81,9 +81,11 @@ def download_all(doc: dict):
             class_homework_info += "-" + option.text
 
     #添加时间戳后缀防止文件名重复, 文件不能有冒号所以要换掉
-    temp_file_path = "./temp/{}.xlsx".format(class_homework_info+str(datetime.datetime.now()).replace(":", "-"))
+    time_suffix = str(datetime.datetime.now()).replace(":", "-")
+    temp_file_path = "./temp/{}.xlsx".format(class_homework_info+time_suffix)
     all_df.to_excel(temp_file_path, index=False)
-    res = FileResponse(temp_file_path, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",filename="{}.xlsx".format(class_homework_info))
+    time_suffix2 = str(datetime.datetime.now().strftime("%Y-%m-%d")).replace(":", "-")
+    res = FileResponse(temp_file_path, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",filename="{}-{}.xlsx".format(class_homework_info,time_suffix2))
     res.headers["responseType"] = "blob"
     return res
 
@@ -108,9 +110,11 @@ def download_redo(doc: dict):
         redo_df = all_df[all_df["成绩"]<70]
 
     #添加时间戳后缀防止文件名重复, 文件不能有冒号所以要换掉
-    temp_file_path = "./temp/{}-重做.xlsx".format(class_homework_info+str(datetime.datetime.now()).replace(":", "-"))
+    time_suffix = str(datetime.datetime.now()).replace(":", "-")
+    temp_file_path = "./temp/{}-重做.xlsx".format(class_homework_info+time_suffix)
     redo_df.to_excel(temp_file_path, index=False)
-    res = FileResponse(temp_file_path, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",filename="{}-重做.xlsx".format(class_homework_info))
+    time_suffix2 = str(datetime.datetime.now().strftime("%Y-%m-%d")).replace(":", "-")
+    res = FileResponse(temp_file_path, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",filename="{}-{}-重做.xlsx".format(class_homework_info,time_suffix2))
     res.headers["responseType"] = "blob"
     return res
 
