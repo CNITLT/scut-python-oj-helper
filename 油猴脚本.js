@@ -46,6 +46,7 @@
                 this.className = matchRes[3];
                 this.submit_date = new Date(matchRes[4]);
                 this.answer = answer_dom.innerText;
+
             }
 
             hidden(){
@@ -66,6 +67,63 @@
                 this.remark_dom.hidden = false;
             }
 
+            //返回分数索引，没有就返回-1
+            getScoreIndex(){
+                for(let i = 0; i < this.score_doms.length;i++){
+                    if(this.score_doms[i].checked){
+                        return i;
+                    }
+                }
+                return -1;
+            }
+
+            setScoreByIndex(index){
+                if(index>=0 && index < this.score_doms.length){
+                    this.score_doms[index].checked = true;
+                }
+            }
+
+            //返回评语
+            getRemark(){
+                return this.remark_dom.value;
+            }
+
+            setRemark(value){
+                this.remark_dom.value = value;
+            }
+
+            backupScore(){
+                let index = this.getScoreIndex();
+                let remark_str =  this.getRemark();
+                let backPattern =  /^back:\[(-?\d+)\]/;
+                let new_remark_str ="back:[" + index.toString() + "]" + remark_str.replace(backPattern,"");
+                this.setRemark(new_remark_str);
+            }
+
+            hasBackup(){
+                let remark_str = this.getRemark();
+                let backPattern = /^back:\[(-?\d+)\]/;
+                return backPattern.test(remark_str);
+            }
+
+            restoreScore(){
+                if(this.hasBackup()){
+                    let backPattern = /^back:\[(-?\d+)\]/;
+                    let remark_str = this.getRemark();
+                    let backIndex = parseInt(remark_str.match(backPattern)[1]);
+                    if(backIndex >= 0){
+                        this.setScoreByIndex(backIndex);
+                    }
+                }
+            }
+
+            //获取评语的真实长度，不包含备份
+            getRemarkRealLength(){
+                let remark_str =  this.getRemark();
+                let backPattern =  /^back:\[(-?\d+)\]/;
+                let real_remark_str = remark_str.replace(backPattern,"");
+                return real_remark_str.length;
+            }
         }
         //必须在页面没改变前调用
         function get_student_info_list(){
@@ -91,7 +149,7 @@
             return student_info_list;
         }
         var student_list = get_student_info_list();
-
+        unsafeWindow.student_list = student_list;
 
         var inputRadioNamePre = "radioScore";
         var inputRemarkIdPre = "txtRemark";
@@ -185,7 +243,12 @@
                         break;
                     }
                 }
-                if (value == undefined || (value != 100 && remark.length < 5)) {
+
+                //let length = remark.length;
+                let backPattern =  /^back:\[(-?\d+)\]/;
+                let real_remark_str = remark_str.replace(backPattern,"");
+                let remark_length = real_remark_str.length;
+                if (value == undefined || (value != 100 && remark_length < 5)) {
                     console.log(i / 11 + 1);
                     continue;
                 }
@@ -424,6 +487,21 @@
                 redo_button_dom.innerText = "重做";
             }
         });
+
+        // 通过评语来备份学生成绩
+         function backupAllScore(){
+               for(let i = 0; i < student_list.length;i++){
+                   student_list[i].backupScore();
+               }
+         }
+
+         function restoreAllScore(){
+               for(let i = 0; i < student_list.length;i++){
+                   student_list[i].restoreScore();
+               }
+         }
+        unsafeWindow.restoreAllScore = restoreAllScore;
+
         function myEnhancedSave() {
             //写缓存
             //先获取问题,以问题作为key值
@@ -442,6 +520,8 @@
             }
             value["answerList"] = answerList;
             sessionStorage.setItem(question, JSON.stringify(value));
+            // 作业分数备份，用于系统自动变动分数的还原
+            backupAllScore();
             //最后触发原先的保存功能
             let oldSaveButton = document.getElementById("submit1");
             //  兼容IE
@@ -464,6 +544,26 @@
         submit1Dom.parentNode.insertBefore(fixedSubmitButtonDom, submit1Dom);
         //绑定一个函数
         fixedSubmitButtonDom.addEventListener('click', myEnhancedSave);
+
+        //备份按钮
+        var fixedBackScoreDom = submit1Dom.cloneNode(true);
+        fixedBackScoreDom.id = "myFixedBackScoreButton";
+        fixedBackScoreDom.style = "position:fixed;top:10%;right:5%";
+        fixedBackScoreDom.value = "备份";
+        fixedBackScoreDom.type = "button";
+        submit1Dom.parentNode.insertBefore(fixedBackScoreDom, submit1Dom);
+        //绑定一个函数
+        fixedBackScoreDom.addEventListener('click', backupAllScore);
+
+        //还原按钮
+        var fixedRestoreScoreDom = submit1Dom.cloneNode(true);
+        fixedRestoreScoreDom.id = "myFixedRestoreScoreButton";
+        fixedRestoreScoreDom.style = "position:fixed;top:15%;right:5%";
+        fixedRestoreScoreDom.value = "还原";
+        fixedRestoreScoreDom.type = "button";
+        submit1Dom.parentNode.insertBefore(fixedRestoreScoreDom, submit1Dom);
+        //绑定一个函数
+        fixedRestoreScoreDom.addEventListener('click', restoreAllScore);
 
         //如果有缓存的话读取缓存
         function readCache() {
