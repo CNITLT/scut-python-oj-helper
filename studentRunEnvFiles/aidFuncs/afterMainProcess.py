@@ -24,7 +24,8 @@ def atTurtleExit():
     tempFile = sys.argv[0] + ".turtle.eps"
     turtle.getscreen().getcanvas().postscript(file=tempFile)
     from PIL import Image, EpsImagePlugin
-    EpsImagePlugin.gs_windows_binary = r'./ghostScript/gswin64c.exe'
+    sys.path.append("../../../studentRunEnvFiles/ghostScript")
+    EpsImagePlugin.gs_windows_binary = r'../../../studentRunEnvFiles/ghostScript/gswin64c.exe'
 
     img = Image.open(tempFile)
     img = img.resize((300,300))

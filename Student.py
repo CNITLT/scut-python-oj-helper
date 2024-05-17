@@ -52,8 +52,13 @@ class Student:
     def envPrepare(self):
         srcDir = "studentRunEnvFiles"
         #前一个是需要链接的目录，后一个为True的话则连目录本身一起复制，如果为false则只复制目录下面的文件, 只处理一层
-        linkDirs = [("studentRunEnvFiles/aidFuncs", False), ("studentRunEnvFiles/ghostScript", True)]
-        copyDirs = [("studentRunEnvFiles/inputFiles", False)]
+        # linkDirs = [("studentRunEnvFiles/aidFuncs", False), ("studentRunEnvFiles/ghostScript", True)]
+        # copyDirs = [("studentRunEnvFiles/inputFiles", False)]
+
+        # 全改复制能避免硬链接超出的问题, ghostScript改了下搜索方法不再需要复制了
+        linkDirs = []
+        copyDirs = [("studentRunEnvFiles/aidFuncs", False), ("studentRunEnvFiles/inputFiles", False)]
+
         if not os.path.isdir(self.workDir):
             os.mkdir(self.workDir)
 
@@ -115,7 +120,9 @@ class Student:
             out = popen.buffer.read().decode("utf-8")
         #print(str(self.seq) + self.name)
         out = out.replace("\r\n", "\n")
-        out = out.replace("\r", "|")
+        if "<img src=\"data:image/jpg;base64" not in out:
+            out = out.replace("<", "&lt;")
+            out = out.replace(">", "&gt;")
         return out
     @staticmethod
     def testFile(pyFile, inputFile):
