@@ -8,6 +8,7 @@ import re
 import sys
 import tempfile
 import threading
+import weakref
 from pythonOJConfig import *
 from hookFunctions import pythonOjOldOpen
 from hookFunctions import endRunLimitTimer
@@ -47,7 +48,8 @@ for moduleName, exitFunction in moduleAndExitFunction.items():
         exitFunction()
 
 for fo in pythonOJOpenFoList:
-    fo.close()
+    if fo() is not None:
+        fo().close()
 
 for fileName in pythonOJNeedReadFileList:
     print("\n","-"*10, fileName, '-'*10)

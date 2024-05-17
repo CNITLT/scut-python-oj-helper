@@ -3,7 +3,7 @@ import random
 import sys
 import re
 from shutil import copyfile
-
+import weakref
 import pandas
 
 from pythonOJConfig import *
@@ -80,7 +80,7 @@ def pythonOjOpen(*args,**kwargs):
     if args[0] not in pythonOJNeedReadFileList:
         pythonOJNeedReadFileList.append(args[0])
     fo = pythonOjOldOpen(*args,**kwargs)
-    pythonOJOpenFoList.append(fo)
+    pythonOJOpenFoList.append(weakref.ref(fo))
     return fo
 
 
