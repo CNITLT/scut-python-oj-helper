@@ -60,6 +60,7 @@ def pythonOjOpen(*args,**kwargs):
     #     args[0] = "2015年5月高三模拟考成绩.csv"
     #     args = tuple(args)
     #     kwargs["encoding"] = "utf8"
+
     if fixOpenedFileNameFlag:
         return pythonOjOldOpen(openedFileName, "r",encoding="utf-8")
 
@@ -114,7 +115,6 @@ def pandasHook():
         if args[0] not in pythonOJNeedReadFileList:
             pythonOJNeedReadFileList.append(args[0])
         fo = oldRead_csv(*args, **kwargs)
-        pythonOJOpenFoList.append(fo)
         return fo
     pandas.read_csv = pythonOjPandasRead_csv
     def pythonOjPandasRead_excel(*args, **kwargs):
@@ -134,7 +134,6 @@ def pandasHook():
         if args[0] not in pythonOJNeedReadFileList:
             pythonOJNeedReadFileList.append(args[0])
         fo = oldRead_excel(*args, **kwargs)
-        pythonOJOpenFoList.append(fo)
         return fo
     pandas.read_excel = pythonOjPandasRead_excel
 moduleAndHookFunction["pandas"] = pandasHook

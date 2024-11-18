@@ -27,7 +27,7 @@ class Student:
     @staticmethod
     def getStudentListFromHTML(htmlDoc:str):
         studentList = []
-        studentInfoPattern = re.compile(r"(\d*) (\S*) (\S*) 提交时间:(\S* \S*)")
+        studentInfoPattern = re.compile(r"(\d*) (.*) (\S*) 提交时间:(.*)")#补交没有提交时间
 
         soup = BeautifulSoup(htmlDoc, "html.parser")
 
@@ -96,6 +96,10 @@ class Student:
     def answerPreprocessing(self):
         # 处理换行问题，直接插入hook后的所有函数
         hookInputStr = "from hookFunctions import *\n"
+
+        # 处理下汇率转化问题的货币符号问题
+        # self.answer = self.answer.replace("＄", "$")
+        # self.answer = self.answer.replace("¥", "￥")
         answer2 = hookInputStr + self.answer
 
         # 处理画图的问题，在main函数后截获数据并编码为base64传输到前端
@@ -123,6 +127,7 @@ class Student:
         if "<img src=\"data:image/jpg;base64" not in out:
             out = out.replace("<", "&lt;")
             out = out.replace(">", "&gt;")
+        #out += "\n \\n number:{}".format(out.count("\n"))
         return out
     @staticmethod
     def testFile(pyFile, inputFile):
