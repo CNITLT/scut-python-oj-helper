@@ -12,10 +12,12 @@ import weakref
 from pythonOJConfig import *
 from hookFunctions import pythonOjOldOpen
 from hookFunctions import endRunLimitTimer
+from hookFunctions import pythonOJInputUsedFlag
+
+
 endRunLimitTimer()
 import uuid
 moduleAndExitFunction = {}
-
 
 
 def atTurtleExit():
@@ -59,68 +61,81 @@ for fileName in pythonOJNeedReadFileList:
 
 
 
-# def f_read(filename,split_char):
-#     f=open(filename,"r")
-#     s=f.read()  #读入全部内容
-#     a=s.split("\n")
-#     max=''    #表示还没有最大值
-#     for i in a:
-#         b=i.split(split_char)
-#         for j in b:
-#             if j=="" or j=="\n":
-#                 continue
-#             if max=='':
-#                 max = eval(j)
-#             elif j != '':
-#                 if eval(j)>max:
-#                     max=eval(j)
-#     f.close()
-#     print("正确答案:用read求全部数字的最大值:{}".format(max))
-#
-#
-# #用readlines求每行数字和的最大值
-# def f_readlines(filename,split_char):
-#     f=open(filename,"r")
-#     max=''
-#     for line in f.readlines():  #这句也可以改成 for line in f:
-#         b=line.split(split_char)
-#         sum=0
-#         for j in b:
-#             if j == "" or j == "\n":
-#                 continue
-#             sum = sum + eval(j)
-#
-#         if max=='':
-#             max = sum
-#         elif sum>max:
-#             max = sum
-#     f.close()
-#     print("正确答案:用readlines求每行和的最大值:{}".format(max))
+def f_read(filename,split_char):
+    f=open(filename,"r")
+    s=f.read()  #读入全部内容
+    a=s.split("\n")
+    max=''    #表示还没有最大值
+    for i in a:
+        b=i.split(split_char)
+        for j in b:
+            if j=="" or j=="\n":
+                continue
+            if max=='':
+                max = eval(j)
+            elif j != '':
+                if eval(j)>max:
+                    max=eval(j)
+    f.close()
+    print("正确答案:用read求全部数字的最大值:{}".format(max))
+
+
+#用readlines求每行数字和的最大值
+def f_readlines(filename,split_char):
+    f=open(filename,"r")
+    max=''
+    for line in f.readlines():  #这句也可以改成 for line in f:
+        b=line.split(split_char)
+        sum=0
+        for j in b:
+            if j == "" or j == "\n":
+                continue
+            sum = sum + eval(j)
+
+        if max=='':
+            max = sum
+        elif sum>max:
+            max = sum
+    f.close()
+    print("正确答案:用readlines求每行和的最大值:{}".format(max))
+
+
 #适用于随机数生成文件的题目，用来检测答案的正确性,看题目随时更改
-# def check_answer():
-#     filename = "./data.txt"
-#     f = open(filename, "r")
-#     content = f.read()  # 读入全部内容
-#     for i in range(10):
-#         content = content.replace(str(i),"")
-#     content = content.replace("-", "")
-#     content = set(content)
-#     content.remove("\n")
-#     split_char= list(content)[0]
-#     print("split_char:'{}'".format(split_char))
-#     f.close()
-#     f_read(filename,split_char)
-#     f_readlines(filename,split_char)
+def check_answer():
+    filename = "./data.txt"
+    f = open(filename, "r")
+    content = f.read()  # 读入全部内容
+    for i in range(10):
+        content = content.replace(str(i),"")
+    content = content.replace("-", "")
+    content = set(content)
+    content.remove("\n")
+    split_char= list(content)[0]
+    print("split_char:'{}'".format(split_char))
+    f.close()
+    f_read(filename,split_char)
+    f_readlines(filename,split_char)
 # check_answer()
 
 #检测某些函数是否被调用
-# def check_func():
-#     ban_func = ["max", "sort", "sorted"]
-#     for funcName in ban_func:
-#         pattern = re.compile(r"{}[(].*?[)]".format(funcName))
-#         if pattern.search(fileContent) != None:
-#             print("{}函数被调用".format(funcName))
+def check_func():
+    ban_func = ["max", "sort", "sorted", r"\.read", r"\.readlines"]
+    for funcName in ban_func:
+        pattern = re.compile(r"{}[(].*?[)]".format(funcName))
+        if pattern.search(fileContent) != None:
+            print("{}函数被调用".format(funcName))
 # check_func()
+
+def aid_call():
+    if not pythonOJInputUsedFlag:
+        import __main__
+        # 视情况而定调用学生的函数, 需要随题目修改
+        print("辅助批改调用")
+        __main__.DrawPic(eval(input()),input())
+# aid_call()
+# 调试用，检测答案回显是否与学生一一对应
+# print(os.path.basename(os.path.dirname(__file__)))
+
 
 
 

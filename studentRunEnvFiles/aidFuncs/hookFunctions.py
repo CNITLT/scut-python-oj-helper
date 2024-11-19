@@ -13,7 +13,10 @@ import pandas as pd
 pythonOJOldInput = input
 
 moduleAndHookFunction = {}
+pythonOJInputUsedFlag = False
 def input(*args, **kwargs):
+    global pythonOJInputUsedFlag
+    pythonOJInputUsedFlag = True
     try:
         res = pythonOJOldInput(*args, **kwargs)
     except Exception as e:
