@@ -13,9 +13,23 @@ from pythonOJConfig import *
 from hookFunctions import pythonOjOldOpen
 from hookFunctions import endRunLimitTimer
 from hookFunctions import pythonOJInputUsedFlag
-
+from hookFunctions import pythonOJFuncDict
+from hookFunctions import input
 
 endRunLimitTimer()
+import __main__
+studentFuncDict = {}
+def findStudentFunc():
+    global studentFuncDict
+    for key,value in list(__main__.__dict__.items()):
+        if not callable(value):
+            continue
+        if key in pythonOJFuncDict:
+            continue
+        studentFuncDict[key] = value
+findStudentFunc()
+# print(studentFuncDict)
+
 import uuid
 moduleAndExitFunction = {}
 
@@ -128,11 +142,14 @@ def check_func():
 
 def aid_call():
     if not pythonOJInputUsedFlag:
-        import __main__
         # 视情况而定调用学生的函数, 需要随题目修改
         print("辅助批改调用")
-        __main__.DrawPic(eval(input()),input())
+        #__main__.DrawPic(eval(input()),input())
+        if len(studentFuncDict) == 1:
+            key, value = list(studentFuncDict.items())[0]
+            print("数字 字母(顺序不定):",value(input()))
 # aid_call()
+
 # 调试用，检测答案回显是否与学生一一对应
 # print(os.path.basename(os.path.dirname(__file__)))
 

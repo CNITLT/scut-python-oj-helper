@@ -189,3 +189,9 @@ s = '''双儿 洪七公 赵敏 赵敏 逍遥子 鳌拜 殷天正 金轮法王 �
        谢逊 梅超风 殷天正 段誉 袁冠南 张三丰 王语嫣 阿紫 谢逊 杨过 郭靖 黄蓉 
        双儿 灭绝师太 段誉 张无忌 陈家洛 黄蓉 鳌拜 黄药师 逍遥子 忽必烈 赵敏 
        逍遥子 完颜洪烈 金轮法王 双儿 鳌拜 洪七公 郭芙 郭襄 赵敏'''
+
+# 记录下当前服务端定义的函数，等会用于排查出学生的函数
+pythonOJFuncDict = {}
+for key,value in list(globals().items()):
+    if callable(value):
+        pythonOJFuncDict[key] = value
