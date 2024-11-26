@@ -12,6 +12,8 @@
 // @match        *://1024.se.scut.edu.cn/%e4%bd%9c%e4%b8%9a%e6%b1%87%e6%80%bb*
 // @match        *://222.201.187.187:8006/%E4%BD%9C%E4%B8%9A%E6%B1%87%E6%80%BB*
 // @match        *://222.201.187.187:8006/%e4%bd%9c%e4%b8%9a%e6%b1%87%e6%80%bb*
+// @match        *://1024.se.scut.edu.cn/%E6%98%BE%E7%A4%BA%E8%AF%95%E5%8D%B7*
+// @match        *://1024.se.scut.edu.cn/%e6%98%be%e7%a4%ba%e8%af%95%e5%8d%b7*
 // @connect      *
 // @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
@@ -26,6 +28,8 @@
     var all_homework_reg = /%E5%85%A8%E9%83%A8%E4%BD%9C%E4%B8%9A/i;
     //用于匹配 "作业汇总"
     var homework_summary_reg = /%E4%BD%9C%E4%B8%9A%E6%B1%87%E6%80%BB/i;
+    //用于匹配 "显示试卷"
+    var single_student_homework_page_reg = /%E6%98%BE%E7%A4%BA%E8%AF%95%E5%8D%B7/i;
     //这个必须在最开始运行，原始HTML页面数据必须保存，不然后端解析不了
     var originalPageHTML = document.documentElement.outerHTML;
 
@@ -276,7 +280,7 @@
                     divDom.parentNode.insertBefore(newDom, divDom);
                     //清空代码
                     var answerDom = newDom.getElementsByTagName("code")[0];
-                    answerDom.innerHTML = ""
+                    answerDom.innerHTML = "";
                     //加入列表
                     this.answerDomList.push(answerDom);
                 }
@@ -675,6 +679,35 @@
         firstSummaryDom.parentNode.insertBefore(download_redo_btn,firstSummaryDom);
 
 
+    }
+
+    if(single_student_homework_page_reg.test(window.location.href)){
+        console.log("学生作业详情页——显示试卷");
+        //把补交答案丢到右上角固定
+        var submit_answer_btn_dom = document.getElementById("Button1");
+        submit_answer_btn_dom.style = "position:fixed;top:5%;right:5%";
+        // 找填写补交答案的dom
+        var table_dom_arr = document.getElementsByTagName("table");
+        var submit_student_answer_dom = null;
+        for(let i = table_dom_arr.length - 1; i >= 0 ; i--){
+            let table_dom = table_dom_arr[i];
+            var keys = ["补交学生答案", "题号", "学生答案"];
+            let j = 0;
+            for(; j < keys.length; j++){
+                let key = keys[j];
+                if(table_dom.innerText.indexOf(key)==-1){
+                    break;
+                }
+            }
+            if (j ==keys.length ){
+                submit_student_answer_dom = table_dom;
+                break;
+            }
+        }
+        if (submit_student_answer_dom){
+            //如果有的话就固定到右上角
+            submit_student_answer_dom.style = "position:fixed;top:10%;right:5%";
+        }
     }
     // Your code here...
 })();
