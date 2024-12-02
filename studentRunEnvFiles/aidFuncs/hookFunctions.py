@@ -63,9 +63,22 @@ def pythonOjOpen(*args,**kwargs):
     #     args[0] = "2015年5月高三模拟考成绩.csv"
     #     args = tuple(args)
     #     kwargs["encoding"] = "utf8"
+    # if "r" not in args[1]:
+    #     workDir = os.path.abspath(os.getcwd())
+    #     absFilePath = os.path.abspath(args[0])
+    #
+    #     if not absFilePath.startswith(workDir):
+    #         print(sys.argv[0], "正在打开非工作目录下的文件")
+    #         exit(-1)
+    #     return pythonOjOldOpen(openedFileName, args[1],encoding="utf-8")
 
     if fixOpenedFileNameFlag:
-        return pythonOjOldOpen(openedFileName, "r",encoding="utf-8")
+        args = list(args)
+        args[0] = openedFileName
+        args = tuple(args)
+        if "encoding" not in kwargs:
+            kwargs["encoding"] = "utf-8"
+        return pythonOjOldOpen(*args,**kwargs)
 
     #打开的文件目录全部切换到工作目录下
     filename = os.path.basename(args[0])
@@ -166,6 +179,7 @@ def startRunLimitTimer():
         timer.start()
 
 def endRunLimitTimer():
+    global timerEnd
     timerEnd = True
 
 

@@ -40,7 +40,7 @@ def generate_all_df(htmlDoc):
         for item in line:
             item_str = item.text
             if item_str != "":
-                data.append(item_str.strip())
+                data.append(item_str.strip().replace("★", "0"))#"★"解析报错，直接替换为0
             else:
                 data.append(0)
         datas.append(data)
