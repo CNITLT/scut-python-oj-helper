@@ -17,7 +17,8 @@ openedFileName和fixOpenedFileNameFlag这两个变量
 3. studentRunEnvFiles/aidFuncs/pythonOJConfig.py pythonOJRunTimeLimit=10默认只能运行10秒，超过会自动关闭，为了防止死循环，但也有确实写的太烂或输入给的太大导致运行时长过长的可能。注意修改,小于等于0的表示不限制运行时间
 4. Student.py popen.buffer.read().decode("utf-8")这行可能会因为电脑设置不同导致异常,请自行解决
 5. 遇到文件读写题，题目要求读取的文件请放入studentRunEnvFiles/inputFiles内
-
+6. 默认使用的python是系统环境变量内的python，若学生代码使用了三方库得在环境变量指定的python内安装，或者修改Student.py里testAnswer函数内的python路径
+   
 ## 效果图
 ![题目和输入][question]
 
