@@ -18,7 +18,10 @@ openedFileName和fixOpenedFileNameFlag这两个变量
 4. Student.py popen.buffer.read().decode("utf-8")这行可能会因为电脑设置不同导致异常,请自行解决
 5. 遇到文件读写题，题目要求读取的文件请放入studentRunEnvFiles/inputFiles内
 6. 默认使用的python是系统环境变量内的python，若学生代码使用了三方库得在环境变量指定的python内安装，或者修改Student.py里testAnswer函数内的python路径
-   
+
+## 警告
+快毕业了，该项目不再维护，若学校的助教系统更新，则该项目可能无法正常运行，请自行修改
+
 ## 效果图
 ![题目和输入][question]
 
